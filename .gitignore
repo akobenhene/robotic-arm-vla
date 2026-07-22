@@ -11,6 +11,9 @@ __pycache__/
 outputs/
 checkpoints/
 *.mp4
+!demo_output.mp4
+!demo_smolvla.mp4
+!comparison_act_vs_smolvla.mp4
 !demo_output.gif
 !demo_smolvla.gif
 !comparison_act_vs_smolvla.gif

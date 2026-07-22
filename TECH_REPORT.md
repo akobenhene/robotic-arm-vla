@@ -107,4 +107,9 @@ This repo is not a toy random-action GIF. It demonstrates:
 CI: `.github/workflows/ci-smoke.yml` + `smoke_test.py` (ACT 5-step + SmolVLA prompt ablation).  
 Release: GitHub `v1.0.0` bundles GIFs + this writeup.
 
-Next hardening: SmolVLA finetune for TransferCube success, and optional real-robot (SO-100) deployment notes.
+### Roadmap (implemented as docs + tooling)
+
+1. **SmolVLA finetune playbook** — [docs/FINETUNE_SMOLVLA.md](docs/FINETUNE_SMOLVLA.md) + `scripts/finetune_smolvla.*`  
+   Target: language *and* TransferCube success (≥40% on seeds 0–19). Requires GPU.  
+2. **Real-robot appendix** — [docs/DEPLOYMENT_SO100.md](docs/DEPLOYMENT_SO100.md) (SO-100 record → train → deploy).  
+3. **MP4 export** — `export_mp4.py` for interview / LinkedIn artifacts.

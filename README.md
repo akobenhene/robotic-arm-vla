@@ -8,7 +8,7 @@
 
 End-to-end **Physical AI** demo: MuJoCo Aloha bimanual manipulation + Hugging Face **LeRobot** policies (ACT for task success, **SmolVLA** for language conditioning), closed-loop rollout, multi-seed evaluation, and GIF export.
 
-**Tech writeup:** [TECH_REPORT.md](TECH_REPORT.md)
+**Tech writeup:** [TECH_REPORT.md](TECH_REPORT.md) · **Finetune:** [docs/FINETUNE_SMOLVLA.md](docs/FINETUNE_SMOLVLA.md) · **Real robot:** [docs/DEPLOYMENT_SO100.md](docs/DEPLOYMENT_SO100.md)
 
 ---
 
@@ -52,7 +52,15 @@ or:
 .\.venv\Scripts\python.exe prompt_ablation.py
 .\.venv\Scripts\python.exe compare_policies.py --seed 36 --steps 400
 .\.venv\Scripts\python.exe smoke_test.py
+.\.venv\Scripts\python.exe export_mp4.py
+.\.venv\Scripts\python.exe scripts\print_finetune_plan.py
 ```
+
+### Next direction: SmolVLA finetune + hardware
+
+- Finetune recipe (GPU): [docs/FINETUNE_SMOLVLA.md](docs/FINETUNE_SMOLVLA.md) · `scripts/finetune_smolvla.ps1`
+- SO-100 sim→real appendix: [docs/DEPLOYMENT_SO100.md](docs/DEPLOYMENT_SO100.md)
+- MP4 exports for decks: `demo_output.mp4`, `comparison_act_vs_smolvla.mp4`
 
 ### CI
 
@@ -121,7 +129,10 @@ Robotic_Arm/
 ├── compare_policies.py  # ACT vs SmolVLA side-by-side GIF
 ├── viz.py               # HUD overlays
 ├── TECH_REPORT.md       # 1-page portfolio writeup
-├── smoke_test.py        # CI / local smoke entrypoint
+├── smoke_test.py / export_mp4.py
+├── docs/FINETUNE_SMOLVLA.md
+├── docs/DEPLOYMENT_SO100.md
+├── scripts/finetune_smolvla.{sh,ps1}
 ├── .github/workflows/ci-smoke.yml
 ├── run.bat / run.ps1
 ├── eval_results.json
