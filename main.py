@@ -91,15 +91,22 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Torch device for policy inference.",
     )
     parser.add_argument(
+        "--policy",
+        type=str,
+        default="act",
+        choices=("act", "smolvla", "mock"),
+        help="Policy backend: act (success), smolvla (language), mock.",
+    )
+    parser.add_argument(
         "--mock-policy",
         action="store_true",
-        help="Use MockVLAPolicy instead of pretrained LeRobot ACT.",
+        help="Alias for --policy mock.",
     )
     parser.add_argument(
         "--repo-id",
         type=str,
-        default="lerobot/act_aloha_sim_transfer_cube_human",
-        help="Hugging Face LeRobot policy repo id.",
+        default=None,
+        help="Optional Hugging Face repo override for act/smolvla.",
     )
     parser.add_argument(
         "--deterministic",
@@ -213,7 +220,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
 
-    use_lerobot = not args.mock_policy
+    policy_type = "mock" if args.mock_policy else args.policy
+    use_lerobot = policy_type != "mock"
     image_size = (
         (int(args.image_size[0]), int(args.image_size[1]))
         if args.image_size is not None
@@ -233,12 +241,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     action_high = torch.as_tensor(env.action_space.high, dtype=torch.float32)
 
     print(
-        f"Building policy (lerobot={use_lerobot}) | "
+        f"Building policy ({policy_type}) | "
         f"action_dim={env.action_dim} | prompt={args.prompt!r}"
     )
     if use_lerobot and not env.is_aloha:
         print(
-            "WARNING: pretrained ACT expects AlohaTransferCube. "
+            "WARNING: pretrained Hub policies expect AlohaTransferCube. "
             "Use the default env id for task success."
         )
 
@@ -248,7 +256,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         action_high=action_high,
         image_size=image_size if isinstance(image_size, tuple) else (84, 84),
         device=args.device,
-        use_lerobot=use_lerobot,
+        policy_type=policy_type,
         lerobot_repo_id=args.repo_id,
     )
 
@@ -272,11 +280,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         f"steps={result.steps} | mean_reward={mean_r:.4f} | "
         f"max_reward={result.max_reward:.1f} | success={result.success}"
     )
-    if use_lerobot:
-        print(f"Policy: LeRobot ACT from {args.repo_id}")
-    else:
-        print("Policy: MockVLAPolicy (exploratory motion only).")
-    return 0 if result.success or args.mock_policy else 0
+    print(f"Policy backend: {policy_type}")
+    return 0
 
 
 if __name__ == "__main__":

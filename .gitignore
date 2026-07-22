@@ -9,8 +9,11 @@ __pycache__/
 
 # Local artifacts (keep demo_output.gif tracked for README)
 outputs/
+checkpoints/
 *.mp4
 !demo_output.gif
+!prompt_ablation.json
+!eval_results.json
 
 # OS / IDE
 .DS_Store

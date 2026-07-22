@@ -2,43 +2,36 @@
 
 ![Demo](demo_output.gif)
 
-End-to-end **Physical AI** demo: MuJoCo Aloha bimanual manipulation + a pretrained Hugging Face **LeRobot ACT** policy, closed-loop rollout, success-aware evaluation, and GIF export.
+End-to-end **Physical AI** demo: MuJoCo Aloha bimanual manipulation + Hugging Face **LeRobot** policies (ACT for task success, **SmolVLA** for language conditioning), closed-loop rollout, multi-seed evaluation, and GIF export.
 
 ---
 
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│              Inference / Eval (main.py, evaluate.py)             │
-│                                                                  │
-│   Task prompt (logged) ──┐                                       │
-│                          ├──► LeRobot ACTPolicy ──► a_t ∈ R^14   │
-│   RGB top + qpos ────────┘   (policy.py)              │          │
-│        ▲                                                  │          │
-│        │                                                  ▼          │
-│   MuJoCo camera ◄──── gym-aloha AlohaTransferCube ◄──────┘          │
-│   (env_wrapper.py)         success ⇔ reward == 4                     │
-└──────────────────────────────────────────────────────────────────┘
+Language prompt ──┐
+                  ├──► Policy (ACT | SmolVLA) ──► action (14,)
+RGB top + qpos ───┘         policy.py                  │
+     ▲                                                 │
+     │                                                 ▼
+MuJoCo camera ◄──── gym-aloha AlohaTransferCube ◄──────┘
+env_wrapper.py           success <=> reward == 4
                               │
                               ▼
-              demo_output.gif  +  eval_results.json
+     demo_output.gif  +  eval_results.json  +  prompt_ablation.json
 ```
 
-| Stage | Module | Role |
-|--------|--------|------|
-| **Perception** | `RoboticsEnvWrapper` | Top-camera RGB `(480×640×3)` + 14-D proprioception |
-| **Policy** | `LeRobotACTPolicy` | Hub weights `lerobot/act_aloha_sim_transfer_cube_human` + checkpoint normalization |
-| **Eval** | `evaluate.py` | Multi-seed sweep; stops on first cube-transfer success |
-| **Artifact** | `imageio` | Best-episode GIF for the README |
+| Backend | Hub checkpoint | Language? | Role |
+|---------|----------------|-----------|------|
+| **ACT** | `lerobot/act_aloha_sim_transfer_cube_human` | No | Task success / GIF |
+| **SmolVLA** | `crislmfroes/smolvla-aloha-sim-transfer-cube-scripted` | **Yes** | Prompt-conditioned actions |
+| **Mock** | — | Hash embedding | FetchReach prototyping |
 
-**Success criterion (Aloha TransferCube):** reward stages `0→1→2→3→4`; **success = reward 4** (left gripper holds cube off the table after handoff).
+**Success criterion (Aloha TransferCube):** reward stages `0→1→2→3→4`; **success = reward 4**.
 
 ---
 
 ## Quick Start (Windows)
-
-Use the venv interpreter directly if `Activate.ps1` is blocked by execution policy:
 
 ```bat
 run.bat
@@ -47,8 +40,10 @@ run.bat
 or:
 
 ```powershell
-.\.venv\Scripts\python.exe main.py --steps 400 --seed 0
-.\.venv\Scripts\python.exe evaluate.py --seeds 0-29 --steps 400
+.\.venv\Scripts\python.exe main.py --policy act --steps 400 --seed 0
+.\.venv\Scripts\python.exe main.py --policy smolvla --prompt "Transfer the cube between the Aloha arms"
+.\.venv\Scripts\python.exe evaluate.py --policy act --seeds 0-49 --steps 400 --continue-after-success
+.\.venv\Scripts\python.exe prompt_ablation.py
 ```
 
 ### Create the venv (Python 3.11)
@@ -61,29 +56,39 @@ py -3.11 -m venv .venv
 
 ---
 
-## Evaluation
+## Evaluation (ACT)
 
 ```powershell
-.\.venv\Scripts\python.exe evaluate.py --seeds 0-29 --steps 400
+.\.venv\Scripts\python.exe evaluate.py --policy act --seeds 0-49 --steps 400 --continue-after-success
 ```
 
-Writes:
-
-- `eval_results.json` — per-seed `max_reward`, `success`, aggregate success rate  
-- `demo_output.gif` — best episode (prefers a successful transfer)
-
-Example metrics from a local CPU eval (`evaluate.py --seeds 0-29 --steps 400`, stopped at first success):
+Writes `eval_results.json` + best-episode `demo_output.gif`.
 
 | Metric | Value |
 |--------|--------|
 | Policy | `lerobot/act_aloha_sim_transfer_cube_human` |
 | Env | `gym_aloha/AlohaTransferCube-v0` |
-| Best seed | `0` |
-| Steps to success | `280` |
-| Max reward | `4` (full cube transfer) |
-| Local success (this sweep) | `1/1` (stopped early) |
+| Local CPU sweep (seeds 0–49, 400 steps) | **25/50 = 50.0%** success |
+| Best seed (GIF) | `36` (reward 4, full transfer) |
+| Hub reference | ~83% / 500 eps (official LeRobot GPU eval) |
 
-Hub reference eval for this checkpoint: **~83%** success over 500 episodes (official LeRobot GPU eval).
+Details: `eval_results.json`.
+
+---
+
+## Language conditioning (SmolVLA)
+
+```powershell
+.\.venv\Scripts\python.exe prompt_ablation.py --seed 0
+```
+
+Same RGB + state, two prompts → different first actions (`language_sensitive: true` in `prompt_ablation.json`).
+
+Example (CPU, seed 0):
+
+| Prompt A | Prompt B | Mean \|Δa\| (L1) |
+|----------|----------|------------------|
+| Transfer the cube… | Do nothing and keep both arms still | ~0.035 |
 
 ---
 
@@ -92,13 +97,15 @@ Hub reference eval for this checkpoint: **~83%** success over 500 episodes (offi
 ```text
 Robotic_Arm/
 ├── requirements.txt
-├── env_wrapper.py       # Aloha / Fetch RGB+state wrapper
-├── policy.py            # LeRobotACTPolicy + MockVLAPolicy
-├── main.py              # Single-episode rollout + GIF
-├── evaluate.py          # Multi-seed success sweep
-├── run.bat / run.ps1    # Windows runners (no Activate.ps1)
-├── eval_results.json    # Generated by evaluate.py
-├── demo_output.gif
+├── env_wrapper.py
+├── policy.py            # ACT + SmolVLA + Mock
+├── main.py
+├── evaluate.py          # Multi-seed ACT/SmolVLA eval
+├── prompt_ablation.py   # Language sensitivity check
+├── run.bat / run.ps1
+├── eval_results.json    # 50-seed ACT metrics (50% success)
+├── prompt_ablation.json # SmolVLA prompt delta
+├── demo_output.gif      # Best successful transfer (seed 36)
 └── README.md
 ```
 
@@ -106,10 +113,10 @@ Robotic_Arm/
 
 ## Design Notes
 
-- Strict typing and docstrings on public APIs; tensor shapes annotated inline.
-- Legacy ACT Hub checkpoints store `normalize_*` buffers in `model.safetensors`; `LeRobotACTPolicy` reloads them under LeRobot 0.4.x.
-- Classic ACT is **vision + state** (not language-conditioned). `--prompt` is kept for VLA-shaped APIs; swap Hub repo to SmolVLA / π0 for true text control.
-- Mock fallback: `python main.py --mock-policy --env-id FetchReachDense-v4 --image-size 84 84`
+- Strict typing / docstrings; tensor shapes annotated inline.
+- ACT Hub checkpoints: re-apply legacy `normalize_*` buffers under LeRobot 0.4.x.
+- SmolVLA: Hub processors + tokenizer; config keys unknown to 0.4.2 are sanitized into `checkpoints/`.
+- OOP split: env I/O, policy, orchestration / eval / ablation.
 
 ---
 

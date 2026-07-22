@@ -1,21 +1,28 @@
 """Multimodal Vision-Language-Action (VLA) / imitation policy modules.
 
-Default production path: Hugging Face LeRobot ``ACTPolicy`` pretrained on
-``AlohaTransferCube`` (``lerobot/act_aloha_sim_transfer_cube_human``).
-
-``MockVLAPolicy`` remains available for FetchReach prototyping without Hub weights.
+Production paths
+----------------
+* ``act`` — Hugging Face LeRobot ACT on AlohaTransferCube (task success).
+* ``smolvla`` — language-conditioned SmolVLA finetuned for Aloha transfer cube.
+* ``mock`` — lightweight CNN+text hash for FetchReach prototyping.
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
+import shutil
 import warnings
-from typing import Any, Protocol
+from dataclasses import fields
+from pathlib import Path
+from typing import Any, Literal, Protocol
 
 import torch
 import torch.nn as nn
-from huggingface_hub import hf_hub_download
+from huggingface_hub import hf_hub_download, snapshot_download
 from safetensors import safe_open
+
+PolicyKind = Literal["act", "smolvla", "mock"]
 
 
 class VLAPolicyProtocol(Protocol):
@@ -329,6 +336,156 @@ class LeRobotACTPolicy(nn.Module):
         return action
 
 
+class LeRobotSmolVLAPolicy(nn.Module):
+    """Language-conditioned SmolVLA wrapper for Aloha TransferCube.
+
+    Loads a Hub SmolVLA checkpoint whose observation layout matches gym-aloha
+    (``observation.images.top`` + 14-D state → 14-D action) and routes the
+    natural-language ``task`` string through LeRobot's tokenizer preprocessor.
+
+    Default repo: ``crislmfroes/smolvla-aloha-sim-transfer-cube-scripted``.
+    """
+
+    DEFAULT_REPO_ID: str = "crislmfroes/smolvla-aloha-sim-transfer-cube-scripted"
+
+    def __init__(
+        self,
+        repo_id: str = DEFAULT_REPO_ID,
+        device: str = "cpu",
+        cache_dir: str | Path = "checkpoints",
+    ) -> None:
+        super().__init__()
+        self.repo_id = repo_id
+        self.device_str = device
+        self.device = torch.device(device)
+
+        try:
+            from lerobot.policies.factory import make_pre_post_processors
+            from lerobot.policies.smolvla.configuration_smolvla import SmolVLAConfig
+            from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
+        except ImportError as exc:  # pragma: no cover
+            raise ImportError(
+                "lerobot + transformers are required for SmolVLA. "
+                "Install with: pip install lerobot transformers"
+            ) from exc
+
+        local_dir = self._prepare_local_checkpoint(repo_id, Path(cache_dir), SmolVLAConfig)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self._policy = SmolVLAPolicy.from_pretrained(str(local_dir))
+        self._policy.to(self.device)
+        self._policy.eval()
+        self._preprocessor, self._postprocessor = make_pre_post_processors(
+            self._policy.config,
+            str(local_dir),
+            preprocessor_overrides={"device_processor": {"device": str(self.device)}},
+        )
+        self.action_dim = int(self._policy.config.output_features["action"].shape[0])
+
+    @staticmethod
+    def _prepare_local_checkpoint(
+        repo_id: str,
+        cache_root: Path,
+        config_cls: type,
+    ) -> Path:
+        """Download Hub weights and drop config keys unsupported by local LeRobot."""
+        safe_name = repo_id.replace("/", "__")
+        target = cache_root / safe_name
+        target.mkdir(parents=True, exist_ok=True)
+        marker = target / ".ready"
+        if not marker.exists():
+            src = Path(snapshot_download(repo_id))
+            for item in src.iterdir():
+                dest = target / item.name
+                if item.is_file():
+                    shutil.copy2(item, dest)
+                elif item.is_dir():
+                    if dest.exists():
+                        shutil.rmtree(dest)
+                    shutil.copytree(item, dest)
+
+            cfg_path = target / "config.json"
+            raw = json.loads(cfg_path.read_text(encoding="utf-8"))
+            valid = {f.name for f in fields(config_cls)} | {"type"}
+            cleaned = {k: v for k, v in raw.items() if k in valid}
+            cfg_path.write_text(json.dumps(cleaned, indent=2), encoding="utf-8")
+            marker.write_text("ok", encoding="utf-8")
+        return target
+
+    def reset(self) -> None:
+        """Clear SmolVLA action chunk queue."""
+        self._policy.reset()
+
+    @staticmethod
+    def _normalize_prompt(text: str) -> str:
+        """Ensure the instruction ends with a newline (SmolVLA tokenizer convention)."""
+        prompt = text.strip()
+        if not prompt:
+            prompt = "Transfer the cube between the Aloha arms"
+        if not prompt.endswith("\n"):
+            prompt += "\n"
+        return prompt
+
+    def _build_batch(self, observation: dict[str, Any], text: str) -> dict[str, Any]:
+        """Pack env observation + language task for the SmolVLA preprocessor."""
+        if "lerobot" in observation:
+            batch: dict[str, Any] = dict(observation["lerobot"])
+        else:
+            image = observation["rgb_tensor"]
+            if image.ndim == 3:
+                image = image.unsqueeze(0)
+            if image.shape[-2:] != (480, 640):
+                image = torch.nn.functional.interpolate(
+                    image, size=(480, 640), mode="bilinear", align_corners=False
+                )
+            state = observation["vector_tensor"]
+            if state.ndim == 1:
+                state = state.unsqueeze(0)
+            batch = {
+                "observation.images.top": image,
+                "observation.state": state,
+            }
+        batch["task"] = self._normalize_prompt(text)
+        return batch
+
+    @torch.inference_mode()
+    def predict(
+        self,
+        observation: dict[str, Any],
+        text: str = "",
+        *,
+        deterministic: bool = True,
+    ) -> torch.Tensor:
+        """Run language-conditioned SmolVLA ``select_action``.
+
+        Parameters
+        ----------
+        observation:
+            Dict from ``RoboticsEnvWrapper``.
+        text:
+            Natural-language instruction (conditioned into the VLM backbone).
+        deterministic:
+            Unused (SmolVLA decoding is deterministic given the chunk queue).
+
+        Returns
+        -------
+        action:
+            float32 tensor, shape ``(action_dim,)``.
+        """
+        _ = deterministic
+        batch = self._build_batch(observation, text)
+        processed = self._preprocessor(batch)
+        action = self._policy.select_action(processed)
+        action = self._postprocessor(action)
+        if isinstance(action, torch.Tensor):
+            out = action
+        else:
+            out = torch.as_tensor(action, dtype=torch.float32)
+        if out.ndim == 2 and out.shape[0] == 1:
+            return out.squeeze(0)
+        return out
+
+
 def build_policy(
     action_dim: int,
     *,
@@ -336,16 +493,33 @@ def build_policy(
     action_high: torch.Tensor | float,
     image_size: tuple[int, int] | None = (84, 84),
     device: str = "cpu",
-    use_lerobot: bool = True,
-    lerobot_repo_id: str = LeRobotACTPolicy.DEFAULT_REPO_ID,
+    policy_type: PolicyKind = "act",
+    use_lerobot: bool | None = None,
+    lerobot_repo_id: str | None = None,
 ) -> nn.Module:
-    """Factory: LeRobot ACT by default; MockVLAPolicy when ``use_lerobot=False``."""
-    if use_lerobot:
-        policy: nn.Module = LeRobotACTPolicy(
-            repo_id=lerobot_repo_id,
+    """Factory for ACT / SmolVLA / Mock policies.
+
+    Parameters
+    ----------
+    policy_type:
+        ``"act"`` (default success demo), ``"smolvla"`` (language-conditioned),
+        or ``"mock"``.
+    use_lerobot:
+        Deprecated alias: ``False`` forces ``mock``; ``True`` keeps ``policy_type``.
+    """
+    if use_lerobot is False:
+        policy_type = "mock"
+
+    if policy_type == "act":
+        return LeRobotACTPolicy(
+            repo_id=lerobot_repo_id or LeRobotACTPolicy.DEFAULT_REPO_ID,
             device=device,
         )
-        return policy
+    if policy_type == "smolvla":
+        return LeRobotSmolVLAPolicy(
+            repo_id=lerobot_repo_id or LeRobotSmolVLAPolicy.DEFAULT_REPO_ID,
+            device=device,
+        )
 
     size = image_size if image_size is not None else (84, 84)
     policy = MockVLAPolicy(

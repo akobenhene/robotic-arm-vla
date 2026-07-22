@@ -74,10 +74,17 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Torch device.",
     )
     parser.add_argument(
+        "--policy",
+        type=str,
+        default="act",
+        choices=("act", "smolvla"),
+        help="Policy backend to evaluate.",
+    )
+    parser.add_argument(
         "--repo-id",
         type=str,
-        default="lerobot/act_aloha_sim_transfer_cube_human",
-        help="Hugging Face LeRobot policy repo id.",
+        default=None,
+        help="Optional Hugging Face repo override.",
     )
     parser.add_argument(
         "--prompt",
@@ -141,7 +148,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         action_high=action_high,
         image_size=None,
         device=args.device,
-        use_lerobot=True,
+        policy_type=args.policy,
         lerobot_repo_id=args.repo_id,
     )
 
@@ -200,8 +207,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     n = len(results)
     n_success = sum(1 for r in results if r["success"])
     success_rate = (100.0 * n_success / n) if n else 0.0
+    resolved_repo = args.repo_id or getattr(policy, "repo_id", args.policy)
     report = {
-        "policy": args.repo_id,
+        "policy_type": args.policy,
+        "policy": resolved_repo,
         "env_id": RoboticsEnvWrapper.DEFAULT_ENV_ID,
         "steps_limit": args.steps,
         "seeds_evaluated": [r["seed"] for r in results],

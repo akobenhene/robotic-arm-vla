@@ -10,6 +10,7 @@ gym-aloha>=0.1.1
 lerobot==0.4.2
 huggingface_hub>=0.34.2,<0.36.0
 safetensors>=0.4.3
+transformers>=4.45.0
 imageio>=2.31.0
 imageio-ffmpeg>=0.4.9
 Pillow>=10.0.0

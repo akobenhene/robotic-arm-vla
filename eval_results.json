@@ -3,11 +3,60 @@
   "env_id": "gym_aloha/AlohaTransferCube-v0",
   "steps_limit": 400,
   "seeds_evaluated": [
-    0
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49
   ],
-  "n_episodes": 1,
-  "n_success": 1,
-  "success_rate_pct": 100.0,
+  "n_episodes": 50,
+  "n_success": 25,
+  "success_rate_pct": 50.0,
   "episodes": [
     {
       "seed": 0,
@@ -15,9 +64,352 @@
       "max_reward": 4.0,
       "mean_reward": 0.8428571428571429,
       "success": true
+    },
+    {
+      "seed": 1,
+      "steps": 298,
+      "max_reward": 4.0,
+      "mean_reward": 0.9228187919463087,
+      "success": true
+    },
+    {
+      "seed": 2,
+      "steps": 400,
+      "max_reward": 0.0,
+      "mean_reward": 0.0,
+      "success": false
+    },
+    {
+      "seed": 3,
+      "steps": 284,
+      "max_reward": 4.0,
+      "mean_reward": 0.8309859154929577,
+      "success": true
+    },
+    {
+      "seed": 4,
+      "steps": 400,
+      "max_reward": 0.0,
+      "mean_reward": 0.0,
+      "success": false
+    },
+    {
+      "seed": 5,
+      "steps": 288,
+      "max_reward": 4.0,
+      "mean_reward": 0.9791666666666666,
+      "success": true
+    },
+    {
+      "seed": 6,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.01,
+      "success": false
+    },
+    {
+      "seed": 7,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.6875,
+      "success": false
+    },
+    {
+      "seed": 8,
+      "steps": 400,
+      "max_reward": 0.0,
+      "mean_reward": 0.0,
+      "success": false
+    },
+    {
+      "seed": 9,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.145,
+      "success": false
+    },
+    {
+      "seed": 10,
+      "steps": 400,
+      "max_reward": 1.0,
+      "mean_reward": 0.1225,
+      "success": false
+    },
+    {
+      "seed": 11,
+      "steps": 287,
+      "max_reward": 4.0,
+      "mean_reward": 0.7665505226480837,
+      "success": true
+    },
+    {
+      "seed": 12,
+      "steps": 363,
+      "max_reward": 4.0,
+      "mean_reward": 0.7107438016528925,
+      "success": true
+    },
+    {
+      "seed": 13,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.0125,
+      "success": false
+    },
+    {
+      "seed": 14,
+      "steps": 271,
+      "max_reward": 4.0,
+      "mean_reward": 0.981549815498155,
+      "success": true
+    },
+    {
+      "seed": 15,
+      "steps": 400,
+      "max_reward": 1.0,
+      "mean_reward": 0.085,
+      "success": false
+    },
+    {
+      "seed": 16,
+      "steps": 289,
+      "max_reward": 4.0,
+      "mean_reward": 0.8961937716262975,
+      "success": true
+    },
+    {
+      "seed": 17,
+      "steps": 400,
+      "max_reward": 0.0,
+      "mean_reward": 0.0,
+      "success": false
+    },
+    {
+      "seed": 18,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.755,
+      "success": false
+    },
+    {
+      "seed": 19,
+      "steps": 282,
+      "max_reward": 4.0,
+      "mean_reward": 0.9680851063829787,
+      "success": true
+    },
+    {
+      "seed": 20,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.145,
+      "success": false
+    },
+    {
+      "seed": 21,
+      "steps": 330,
+      "max_reward": 4.0,
+      "mean_reward": 0.8848484848484849,
+      "success": true
+    },
+    {
+      "seed": 22,
+      "steps": 295,
+      "max_reward": 4.0,
+      "mean_reward": 0.9694915254237289,
+      "success": true
+    },
+    {
+      "seed": 23,
+      "steps": 297,
+      "max_reward": 4.0,
+      "mean_reward": 0.8080808080808081,
+      "success": true
+    },
+    {
+      "seed": 24,
+      "steps": 400,
+      "max_reward": 0.0,
+      "mean_reward": 0.0,
+      "success": false
+    },
+    {
+      "seed": 25,
+      "steps": 400,
+      "max_reward": 0.0,
+      "mean_reward": 0.0,
+      "success": false
+    },
+    {
+      "seed": 26,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.21,
+      "success": false
+    },
+    {
+      "seed": 27,
+      "steps": 298,
+      "max_reward": 4.0,
+      "mean_reward": 0.8624161073825504,
+      "success": true
+    },
+    {
+      "seed": 28,
+      "steps": 255,
+      "max_reward": 4.0,
+      "mean_reward": 0.9725490196078431,
+      "success": true
+    },
+    {
+      "seed": 29,
+      "steps": 352,
+      "max_reward": 4.0,
+      "mean_reward": 0.7215909090909091,
+      "success": true
+    },
+    {
+      "seed": 30,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.8425,
+      "success": false
+    },
+    {
+      "seed": 31,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.76,
+      "success": false
+    },
+    {
+      "seed": 32,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.1025,
+      "success": false
+    },
+    {
+      "seed": 33,
+      "steps": 266,
+      "max_reward": 4.0,
+      "mean_reward": 0.7330827067669173,
+      "success": true
+    },
+    {
+      "seed": 34,
+      "steps": 307,
+      "max_reward": 4.0,
+      "mean_reward": 0.8892508143322475,
+      "success": true
+    },
+    {
+      "seed": 35,
+      "steps": 283,
+      "max_reward": 4.0,
+      "mean_reward": 0.6607773851590106,
+      "success": true
+    },
+    {
+      "seed": 36,
+      "steps": 226,
+      "max_reward": 4.0,
+      "mean_reward": 0.8407079646017699,
+      "success": true
+    },
+    {
+      "seed": 37,
+      "steps": 400,
+      "max_reward": 0.0,
+      "mean_reward": 0.0,
+      "success": false
+    },
+    {
+      "seed": 38,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.06,
+      "success": false
+    },
+    {
+      "seed": 39,
+      "steps": 272,
+      "max_reward": 4.0,
+      "mean_reward": 0.9117647058823529,
+      "success": true
+    },
+    {
+      "seed": 40,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.03,
+      "success": false
+    },
+    {
+      "seed": 41,
+      "steps": 274,
+      "max_reward": 4.0,
+      "mean_reward": 0.7445255474452555,
+      "success": true
+    },
+    {
+      "seed": 42,
+      "steps": 319,
+      "max_reward": 4.0,
+      "mean_reward": 0.9623824451410659,
+      "success": true
+    },
+    {
+      "seed": 43,
+      "steps": 291,
+      "max_reward": 4.0,
+      "mean_reward": 0.9621993127147767,
+      "success": true
+    },
+    {
+      "seed": 44,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.0975,
+      "success": false
+    },
+    {
+      "seed": 45,
+      "steps": 400,
+      "max_reward": 0.0,
+      "mean_reward": 0.0,
+      "success": false
+    },
+    {
+      "seed": 46,
+      "steps": 400,
+      "max_reward": 0.0,
+      "mean_reward": 0.0,
+      "success": false
+    },
+    {
+      "seed": 47,
+      "steps": 290,
+      "max_reward": 4.0,
+      "mean_reward": 0.8586206896551725,
+      "success": true
+    },
+    {
+      "seed": 48,
+      "steps": 400,
+      "max_reward": 2.0,
+      "mean_reward": 0.15,
+      "success": false
+    },
+    {
+      "seed": 49,
+      "steps": 249,
+      "max_reward": 4.0,
+      "mean_reward": 0.7389558232931727,
+      "success": true
     }
   ],
-  "best_seed": 0,
+  "best_seed": 36,
   "best_success": true,
   "best_max_reward": 4.0
 }
