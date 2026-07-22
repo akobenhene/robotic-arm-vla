@@ -1,0 +1,23 @@
+{
+  "policy": "lerobot/act_aloha_sim_transfer_cube_human",
+  "env_id": "gym_aloha/AlohaTransferCube-v0",
+  "steps_limit": 400,
+  "seeds_evaluated": [
+    0
+  ],
+  "n_episodes": 1,
+  "n_success": 1,
+  "success_rate_pct": 100.0,
+  "episodes": [
+    {
+      "seed": 0,
+      "steps": 280,
+      "max_reward": 4.0,
+      "mean_reward": 0.8428571428571429,
+      "success": true
+    }
+  ],
+  "best_seed": 0,
+  "best_success": true,
+  "best_max_reward": 4.0
+}

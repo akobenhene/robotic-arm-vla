@@ -1,0 +1,17 @@
+# Text-Conditioned Robotic Manipulation via VLA Policies
+# Use Python 3.10–3.12 (this repo ships a .venv on 3.11).
+
+torch>=2.2.1,<2.8.0
+torchvision>=0.21.0,<0.23.0
+numpy>=1.24.0,<2.3.0
+gymnasium[mujoco]>=1.1.1
+gymnasium-robotics>=1.2.4
+gym-aloha>=0.1.1
+lerobot==0.4.2
+huggingface_hub>=0.34.2,<0.36.0
+safetensors>=0.4.3
+imageio>=2.31.0
+imageio-ffmpeg>=0.4.9
+Pillow>=10.0.0
+tqdm>=4.66.0
+einops>=0.8.0
