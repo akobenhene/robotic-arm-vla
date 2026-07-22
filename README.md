@@ -51,7 +51,16 @@ or:
 .\.venv\Scripts\python.exe evaluate.py --policy act --seeds 0-49 --steps 400 --continue-after-success
 .\.venv\Scripts\python.exe prompt_ablation.py
 .\.venv\Scripts\python.exe compare_policies.py --seed 36 --steps 400
+.\.venv\Scripts\python.exe smoke_test.py
 ```
+
+### CI
+
+GitHub Actions (`.github/workflows/ci-smoke.yml`) runs on every push/PR to `main`:
+
+- install deps on Ubuntu + OSMesa
+- 5-step ACT rollout
+- SmolVLA `prompt_ablation` (`language_sensitive=true`)
 
 ### Create the venv (Python 3.11)
 
@@ -112,6 +121,8 @@ Robotic_Arm/
 ├── compare_policies.py  # ACT vs SmolVLA side-by-side GIF
 ├── viz.py               # HUD overlays
 ├── TECH_REPORT.md       # 1-page portfolio writeup
+├── smoke_test.py        # CI / local smoke entrypoint
+├── .github/workflows/ci-smoke.yml
 ├── run.bat / run.ps1
 ├── eval_results.json
 ├── prompt_ablation.json

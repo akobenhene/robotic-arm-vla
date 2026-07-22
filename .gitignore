@@ -17,6 +17,8 @@ checkpoints/
 !prompt_ablation.json
 !eval_results.json
 !comparison_report.json
+smoke_act.gif
+smoke_prompt_ablation.json
 
 # OS / IDE
 .DS_Store

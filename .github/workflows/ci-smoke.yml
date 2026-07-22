@@ -1,0 +1,65 @@
+name: CI Smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: ACT + SmolVLA smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Cache Hugging Face Hub
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-cache-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            hf-cache-${{ runner.os }}-
+
+      - name: Install system deps (MuJoCo / OpenGL)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgl1 libglib2.0-0 libosmesa6 freeglut3-dev
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run smoke tests
+        env:
+          MUJOCO_GL: osmesa
+          PYOPENGL_PLATFORM: osmesa
+          HF_HUB_DISABLE_SYMLINKS_WARNING: "1"
+        run: |
+          python smoke_test.py --device cpu --act-steps 5 --seed 0
+
+      - name: Upload smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-artifacts
+          path: |
+            smoke_act.gif
+            smoke_prompt_ablation.json
+          if-no-files-found: ignore

@@ -104,4 +104,7 @@ This repo is not a toy random-action GIF. It demonstrates:
 3. **True multimodal path** (SmolVLA prompt sensitivity)  
 4. **Production-minded packaging** (typed modules, eval JSON, comparison artifact, reproducible runners)
 
-Next hardening: SmolVLA finetune for TransferCube success, CI smoke tests, and optional real-robot (SO-100) deployment notes.
+CI: `.github/workflows/ci-smoke.yml` + `smoke_test.py` (ACT 5-step + SmolVLA prompt ablation).  
+Release: GitHub `v1.0.0` bundles GIFs + this writeup.
+
+Next hardening: SmolVLA finetune for TransferCube success, and optional real-robot (SO-100) deployment notes.
