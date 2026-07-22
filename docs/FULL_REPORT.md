@@ -23,6 +23,14 @@ Editable board with all architecture and process frameworks:
 
 **[Open FigJam board](https://www.figma.com/board/CmvFbnixCtXsehlEUMbEnZ)**
 
+**Print PDFs (frameworks embedded):**
+
+| PDF | Use |
+|-----|-----|
+| [Full_Project_Report.pdf](pdf/Full_Project_Report.pdf) | Complete report with all Figma figures |
+| [Grid_Dynamics_Relevance_Brief.pdf](pdf/Grid_Dynamics_Relevance_Brief.pdf) | Screening / FDE brief |
+| [Frameworks_Atlas.pdf](pdf/Frameworks_Atlas.pdf) | Diagram-only atlas |
+
 | Diagram | Purpose |
 |---------|---------|
 | Physical AI System Architecture | CLI → rollout → policies → MuJoCo / Hub / artifacts |
