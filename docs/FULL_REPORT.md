@@ -17,6 +17,23 @@ Quantitative evaluation over 50 random seeds yields a **50%** success rate for A
 
 ---
 
+## Framework diagrams (Figma / FigJam)
+
+Editable board with all architecture and process frameworks:
+
+**[Open FigJam board](https://www.figma.com/board/CmvFbnixCtXsehlEUMbEnZ)**
+
+| Diagram | Purpose |
+|---------|---------|
+| Physical AI System Architecture | CLI → rollout → policies → MuJoCo / Hub / artifacts |
+| Closed-Loop Control Framework | Sense → policy → step → success check |
+| Grid Dynamics GAIN Delivery Loop | Discover → simulate → KPI → refine → FDE deploy |
+| Evaluation and Ablation Framework | ACT success track vs SmolVLA language track |
+| Soft Sensor to Physical AI Mapping | Thesis soft sensing ↔ this robotics stack |
+| TransferCube Reward State Machine | Sparse reward ladder 0 → 4 |
+
+---
+
 ## Table of contents
 
 1. [Introduction](#1-introduction)  

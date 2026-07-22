@@ -9,6 +9,7 @@
 End-to-end **Physical AI** demo: MuJoCo Aloha bimanual manipulation + Hugging Face **LeRobot** policies (ACT for task success, **SmolVLA** for language conditioning), closed-loop rollout, multi-seed evaluation, and GIF export.
 
 **Full report (intro + Grid Dynamics):** [docs/FULL_REPORT.md](docs/FULL_REPORT.md)  
+**Framework diagrams (FigJam):** [Figma board](https://www.figma.com/board/CmvFbnixCtXsehlEUMbEnZ)  
 **Concept guide:** [docs/PROJECT_GUIDE.md](docs/PROJECT_GUIDE.md) · **Tech writeup:** [TECH_REPORT.md](TECH_REPORT.md)  
 **Finetune:** [docs/FINETUNE_SMOLVLA.md](docs/FINETUNE_SMOLVLA.md) · **Real robot:** [docs/DEPLOYMENT_SO100.md](docs/DEPLOYMENT_SO100.md)
 
