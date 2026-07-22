@@ -2,7 +2,13 @@
 
 ![Demo](demo_output.gif)
 
+**ACT (left) vs SmolVLA (right)** — same seed, HUD overlays:
+
+![Comparison](comparison_act_vs_smolvla.gif)
+
 End-to-end **Physical AI** demo: MuJoCo Aloha bimanual manipulation + Hugging Face **LeRobot** policies (ACT for task success, **SmolVLA** for language conditioning), closed-loop rollout, multi-seed evaluation, and GIF export.
+
+**Tech writeup:** [TECH_REPORT.md](TECH_REPORT.md)
 
 ---
 
@@ -44,6 +50,7 @@ or:
 .\.venv\Scripts\python.exe main.py --policy smolvla --prompt "Transfer the cube between the Aloha arms"
 .\.venv\Scripts\python.exe evaluate.py --policy act --seeds 0-49 --steps 400 --continue-after-success
 .\.venv\Scripts\python.exe prompt_ablation.py
+.\.venv\Scripts\python.exe compare_policies.py --seed 36 --steps 400
 ```
 
 ### Create the venv (Python 3.11)
@@ -102,10 +109,16 @@ Robotic_Arm/
 ├── main.py
 ├── evaluate.py          # Multi-seed ACT/SmolVLA eval
 ├── prompt_ablation.py   # Language sensitivity check
+├── compare_policies.py  # ACT vs SmolVLA side-by-side GIF
+├── viz.py               # HUD overlays
+├── TECH_REPORT.md       # 1-page portfolio writeup
 ├── run.bat / run.ps1
-├── eval_results.json    # 50-seed ACT metrics (50% success)
-├── prompt_ablation.json # SmolVLA prompt delta
-├── demo_output.gif      # Best successful transfer (seed 36)
+├── eval_results.json
+├── prompt_ablation.json
+├── comparison_report.json
+├── demo_output.gif
+├── demo_smolvla.gif
+├── comparison_act_vs_smolvla.gif
 └── README.md
 ```
 

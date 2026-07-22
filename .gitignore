@@ -12,8 +12,11 @@ outputs/
 checkpoints/
 *.mp4
 !demo_output.gif
+!demo_smolvla.gif
+!comparison_act_vs_smolvla.gif
 !prompt_ablation.json
 !eval_results.json
+!comparison_report.json
 
 # OS / IDE
 .DS_Store

@@ -1,0 +1,19 @@
+{
+  "seed": 36,
+  "prompt": "Transfer the cube between the Aloha arms",
+  "act": {
+    "success": true,
+    "max_reward": 4.0,
+    "steps": 226,
+    "mean_reward": 0.8407079646017699,
+    "gif": "C:\\Robotic_Arm\\demo_output.gif"
+  },
+  "smolvla": {
+    "success": false,
+    "max_reward": 0.0,
+    "steps": 400,
+    "mean_reward": 0.0,
+    "gif": "C:\\Robotic_Arm\\demo_smolvla.gif"
+  },
+  "comparison_gif": "C:\\Robotic_Arm\\comparison_act_vs_smolvla.gif"
+}
