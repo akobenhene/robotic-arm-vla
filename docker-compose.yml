@@ -1,0 +1,15 @@
+services:
+  demo:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - MUJOCO_GL=osmesa
+      - HF_HOME=/cache/huggingface
+    volumes:
+      - hf_cache:/cache/huggingface
+      - ./outputs:/app/outputs
+    # First Hub download is slow; keep container alive for Streamlit.
+
+volumes:
+  hf_cache:

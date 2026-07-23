@@ -1,0 +1,19 @@
+# Modular demo defaults (CPU-first). Override via CLI flags when needed.
+env_id: gym_aloha/AlohaTransferCube-v0
+device: cpu
+policy: act
+seed: 36
+steps: 40
+prompt: Transfer the cube between the Aloha arms
+streamlit:
+  default_steps: 40
+  max_steps: 400
+soft_sensor:
+  checkpoint: outputs/soft_sensor.pt
+  train_seeds: 0-4
+  train_steps: 80
+finetune_when_gpu:
+  dataset: lerobot/aloha_sim_transfer_cube_human
+  base_policy: lerobot/smolvla_base
+  steps: 20000
+  batch_size: 8

@@ -15,5 +15,7 @@ imageio>=2.31.0
 imageio-ffmpeg>=0.4.9
 Pillow>=10.0.0
 fpdf2>=2.8.0
+streamlit>=1.32.0
+PyYAML>=6.0
 tqdm>=4.66.0
 einops>=0.8.0

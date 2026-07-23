@@ -2,7 +2,9 @@
 
 Goal: close the gap where **ACT solves** TransferCube but community **SmolVLA** is language-sensitive yet rarely succeeds — by finetuning SmolVLA on the official Aloha transfer demonstrations.
 
-> Full finetuning needs a **GPU** (recommended: ≥16 GB VRAM). This playbook is the reproducible recipe; CPU-only machines should use the pretrained ACT path for task success.
+> Full finetuning needs a **GPU** (recommended: ≥16 GB VRAM).  
+> **No local GPU?** Use Google Colab / RunPod with [`notebooks/finetune_smolvla_colab.py`](../notebooks/finetune_smolvla_colab.py).  
+> On CPU, keep shipping ACT success + SmolVLA language ablation; see [`docs/NEXT_LEVEL_CPU.md`](NEXT_LEVEL_CPU.md).
 
 ---
 

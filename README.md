@@ -16,7 +16,23 @@ End-to-end **Physical AI** demo: MuJoCo Aloha bimanual manipulation + Hugging Fa
 **Full report (markdown):** [docs/FULL_REPORT.md](docs/FULL_REPORT.md)  
 **Framework diagrams (FigJam):** [Figma board](https://www.figma.com/board/CmvFbnixCtXsehlEUMbEnZ)  
 **Concept guide:** [docs/PROJECT_GUIDE.md](docs/PROJECT_GUIDE.md) · **Tech writeup:** [TECH_REPORT.md](TECH_REPORT.md)  
-**Finetune:** [docs/FINETUNE_SMOLVLA.md](docs/FINETUNE_SMOLVLA.md) · **Real robot:** [docs/DEPLOYMENT_SO100.md](docs/DEPLOYMENT_SO100.md)
+**Finetune:** [docs/FINETUNE_SMOLVLA.md](docs/FINETUNE_SMOLVLA.md) · **Real robot:** [docs/DEPLOYMENT_SO100.md](docs/DEPLOYMENT_SO100.md)  
+**Next level (CPU now / GPU later):** [docs/NEXT_LEVEL_CPU.md](docs/NEXT_LEVEL_CPU.md)
+
+---
+
+## Next-level features (no local GPU required)
+
+| Feature | Command |
+|---------|---------|
+| Streamlit dashboard | `.\.venv\Scripts\python.exe -m streamlit run app_streamlit.py` |
+| Stronger eval (Wilson CI + timing) | `.\.venv\Scripts\python.exe evaluate.py --seeds 0-9 --continue-after-success` |
+| Domain-rand probe | `.\.venv\Scripts\python.exe evaluate.py --seeds 0-4 --domain-rand` |
+| Prompt bank | `.\.venv\Scripts\python.exe evaluate_prompts.py --policy smolvla --steps 40` |
+| Soft-sensor train | `.\.venv\Scripts\python.exe train_soft_sensor.py --seeds 0-2 --steps 40` |
+| SO-100 dry-run | `.\.venv\Scripts\python.exe scripts\so100_dry_run.py` |
+| Docker UI | `docker compose up --build` |
+| SmolVLA finetune | Use Colab GPU: `notebooks/finetune_smolvla_colab.py` |
 
 ---
 
