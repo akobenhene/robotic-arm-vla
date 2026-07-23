@@ -4,7 +4,6 @@
 **Repository:** [github.com/akobenhene/robotic-arm-vla](https://github.com/akobenhene/robotic-arm-vla)  
 **Release:** [v1.0.0](https://github.com/akobenhene/robotic-arm-vla/releases/tag/v1.0.0)  
 **Stack:** Python 3.11 · PyTorch · MuJoCo · gym-aloha · Hugging Face LeRobot  
-**Audience:** technical reviewers, hiring managers, and **Grid Dynamics** Physical AI / Forward Deployed Engineering (FDE) teams  
 **Related research theme:** AI-based soft sensors, deep learning, and physics-informed methods for industrial estimation and automation  
 
 ---
