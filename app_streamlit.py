@@ -23,12 +23,24 @@ st.caption(
 with st.sidebar:
     policy_type = st.selectbox(
         "Policy",
-        ["smolvla", "act", "mock"],
+        ["act", "smolvla", "mock"],
         index=0,
-        help="Use SmolVLA to see prompt effects. ACT will look identical for any text.",
+        format_func=lambda p: {
+            "act": "act — solves TransferCube (pick/transfer)",
+            "smolvla": "smolvla — language-sensitive (may not succeed yet)",
+            "mock": "mock — FAKE actions only (will NOT pick the cube)",
+        }[p],
+        help="ACT for cube transfer success. SmolVLA for prompt tests. Mock is a smoke stub.",
     )
     seed = st.number_input("Seed", min_value=0, max_value=10_000, value=36, step=1)
-    steps = st.slider("Max steps", min_value=5, max_value=400, value=40, step=5)
+    steps = st.slider(
+        "Max steps",
+        min_value=5,
+        max_value=400,
+        value=200,
+        step=5,
+        help="Use 200–400 for ACT cube transfer. 40 is only for quick smoke tests.",
+    )
     device = st.selectbox("Device", ["cpu", "cuda"], index=0)
 
     st.markdown("### Language prompt")
@@ -41,8 +53,8 @@ with st.sidebar:
 
     compare = st.checkbox(
         "Compare two prompts (first-action delta)",
-        value=policy_type == "smolvla",
-        help="Frozen observation, two prompts — proves language sensitivity.",
+        value=False,
+        help="Only meaningful for SmolVLA. Mock deltas are fake; ACT deltas are ~0.",
     )
     prompt_b_key = st.selectbox(
         "Second prompt (compare)",
@@ -52,10 +64,20 @@ with st.sidebar:
     )
     run = st.button("Run", type="primary")
 
-if policy_type == "act":
-    st.warning(
-        "ACT does **not** use language. Changing the prompt will not change the motion. "
-        "Switch policy to **smolvla** to test prompts."
+if policy_type == "mock":
+    st.error(
+        "You selected **mock**. It outputs fake hash-based actions and will **never** "
+        "pick the red cube. Choose **act** (task success) or **smolvla** (language)."
+    )
+elif policy_type == "act":
+    st.info(
+        "ACT solves TransferCube (red **cube**, not a ball) using vision + joints. "
+        "It ignores the prompt. Use seed **36** and steps **≥200** for a full transfer."
+    )
+elif policy_type == "smolvla":
+    st.info(
+        "SmolVLA reacts to language (see comparison L1). The community checkpoint often "
+        "**fails** full transfer — use **act** to see picking succeed."
     )
 
 col1, col2 = st.columns(2)
@@ -143,8 +165,10 @@ if run:
             st.subheader("Prompt comparison (same image/state)")
             st.metric("L1 action delta", f"{ablation['l1_delta']:.5f}")
             st.metric("Language sensitive", str(ablation["language_sensitive"]))
-            if policy_type != "smolvla":
-                st.info("With ACT/Mock, L1 delta is expected near 0.")
+            if policy_type == "mock":
+                st.warning("Mock L1 deltas are meaningless (hash of text), not real VLA.")
+            elif policy_type == "act":
+                st.info("ACT ignores language — L1 delta should be ~0.")
             elif ablation["language_sensitive"]:
                 st.success("SmolVLA changed the action when the prompt changed.")
             else:
@@ -152,8 +176,8 @@ if run:
             st.json(ablation)
 else:
     st.info(
-        "1. Set policy to **smolvla**\n"
-        "2. Pick two different presets (e.g. `canonical` vs `idle`)\n"
-        "3. Enable **Compare two prompts** and click Run\n\n"
-        "Expect L1 delta > 0 (often ~0.01–0.05), not a totally different GIF."
+        "**To see the arm pick the red cube:** policy = **act**, seed = **36**, "
+        "steps = **200–400**, then Run.\n\n"
+        "**To test language:** policy = **smolvla**, enable Compare "
+        "(`canonical` vs `idle`), Run — check L1 delta, not the GIF."
     )
