@@ -474,6 +474,8 @@ class LeRobotSmolVLAPolicy(nn.Module):
         """
         _ = deterministic
         batch = self._build_batch(observation, text)
+        self.last_task = batch.get("task")
+        self.last_prompt_raw = text
         processed = self._preprocessor(batch)
         action = self._policy.select_action(processed)
         action = self._postprocessor(action)
